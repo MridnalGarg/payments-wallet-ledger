@@ -1,0 +1,26 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: payments-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: your_db_name
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payments_app -d payments"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
