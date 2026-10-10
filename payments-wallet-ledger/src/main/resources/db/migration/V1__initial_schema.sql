@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    user_id         BIGINT PRIMARY KEY,
+    user_id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name            VARCHAR(150) NOT NULL,
     email           VARCHAR(320) NOT NULL,
     phone           VARCHAR(30) NOT NULL,
@@ -8,6 +8,7 @@ CREATE TABLE users (
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
 
     CONSTRAINT uq_users_email UNIQUE (email),
+
     CONSTRAINT uq_users_phone UNIQUE (phone),
 
     CONSTRAINT chk_users_kyc_status
@@ -21,7 +22,7 @@ CREATE TABLE users (
 
 
 CREATE TABLE accounts (
-    account_id      BIGINT PRIMARY KEY,
+    account_id      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     account_type    VARCHAR(30) NOT NULL,
     user_id         BIGINT NULL,
     status          VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
@@ -55,7 +56,7 @@ CREATE TABLE accounts (
 );
 
 CREATE TABLE wallets (
-    wallet_id       BIGINT PRIMARY KEY,
+    wallet_id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id         BIGINT NOT NULL,
     account_id      BIGINT NOT NULL,
     name            VARCHAR(100) NOT NULL,
@@ -87,7 +88,7 @@ CREATE TABLE wallets (
 );
 
 CREATE TABLE transfers (
-    transfer_id             BIGINT PRIMARY KEY,
+    transfer_id             BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type                    VARCHAR(30) NOT NULL,
     status                  VARCHAR(30) NOT NULL,
     source_account_id       BIGINT NOT NULL,
@@ -147,7 +148,7 @@ CREATE TABLE transfers (
 );
 
 CREATE TABLE ledger_entries (
-    id              BIGINT PRIMARY KEY,
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     transfer_id     BIGINT NOT NULL,
     account_id      BIGINT NOT NULL,
     direction       VARCHAR(10) NOT NULL,
@@ -173,7 +174,7 @@ CREATE TABLE ledger_entries (
 );
 
 CREATE TABLE transaction_tokens (
-    id                  BIGINT PRIMARY KEY,
+    id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id             BIGINT NOT NULL,
     transaction_token   VARCHAR(255) NOT NULL,
     request_hash        CHAR(64) NOT NULL,
@@ -190,7 +191,7 @@ CREATE TABLE transaction_tokens (
 );
 
 CREATE TABLE transfer_status_audits (
-    id              BIGINT PRIMARY KEY,
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     transfer_id     BIGINT NOT NULL,
     old_status      VARCHAR(30),
     new_status      VARCHAR(30) NOT NULL,

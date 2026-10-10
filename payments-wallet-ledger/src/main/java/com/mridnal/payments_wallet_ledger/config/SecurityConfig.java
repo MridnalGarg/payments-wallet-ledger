@@ -20,13 +20,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**").permitAll() // Anyone can access /public endpoints
-                        .anyRequest().authenticated()              // Everything else requires a login
+                        .requestMatchers("/actuator/health").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults()) // Enables the default login form UI
-                .httpBasic(Customizer.withDefaults()); // Enables API clients to pass credentials via headers
-
+                .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
@@ -35,7 +34,7 @@ public class SecurityConfig {
             PasswordEncoder passwordEncoder) {
 
         UserDetails testUser = User.builder()
-                .username("test_username")
+                .username("test_user")
                 .password(passwordEncoder.encode("test123"))
                 .roles("USER")
                 .build();
