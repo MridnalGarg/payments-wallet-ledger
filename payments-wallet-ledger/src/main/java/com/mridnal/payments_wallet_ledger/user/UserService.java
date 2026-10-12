@@ -1,7 +1,7 @@
 package com.mridnal.payments_wallet_ledger.user;
 
 import com.mridnal.payments_wallet_ledger.common.exceptions.ResponseStatusException;
-import com.mridnal.payments_wallet_ledger.enums.KycStatus;
+import com.mridnal.payments_wallet_ledger.common.enums.KycStatus;
 import com.mridnal.payments_wallet_ledger.user.dto.CreateUserRequest;
 import com.mridnal.payments_wallet_ledger.user.dto.UserResponse;
 import jakarta.transaction.Transactional;

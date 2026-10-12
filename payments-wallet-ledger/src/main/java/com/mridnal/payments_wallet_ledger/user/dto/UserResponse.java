@@ -1,6 +1,6 @@
 package com.mridnal.payments_wallet_ledger.user.dto;
 
-import com.mridnal.payments_wallet_ledger.enums.KycStatus;
+import com.mridnal.payments_wallet_ledger.common.enums.KycStatus;
 import com.mridnal.payments_wallet_ledger.user.User;
 
 import java.time.LocalDateTime;

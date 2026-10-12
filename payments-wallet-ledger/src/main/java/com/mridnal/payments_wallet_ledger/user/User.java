@@ -1,6 +1,6 @@
 package com.mridnal.payments_wallet_ledger.user;
 
-import com.mridnal.payments_wallet_ledger.enums.KycStatus;
+import com.mridnal.payments_wallet_ledger.common.enums.KycStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

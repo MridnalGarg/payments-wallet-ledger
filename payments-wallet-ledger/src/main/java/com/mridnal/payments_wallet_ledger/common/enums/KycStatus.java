@@ -1,4 +1,4 @@
-package com.mridnal.payments_wallet_ledger.enums;
+package com.mridnal.payments_wallet_ledger.common.enums;
 
 public enum KycStatus {
     PENDING,
