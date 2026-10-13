@@ -3,6 +3,7 @@ CREATE TABLE users (
     name            VARCHAR(150) NOT NULL,
     email           VARCHAR(320) NOT NULL,
     phone           VARCHAR(30) NOT NULL,
+    password_hash   VARCHAR(255) NOT NULL,
     kyc_status      VARCHAR(30) NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
@@ -21,7 +22,6 @@ CREATE TABLE wallets (
     user_id         BIGINT DEFAULT NULL,
     account_id      BIGINT DEFAULT NULL,
     name            VARCHAR(100) NOT NULL,
-    balance         NUMERIC(20,2) NOT NULL DEFAULT 0,
     status          VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMP NOT NULL DEFAULT NOW()

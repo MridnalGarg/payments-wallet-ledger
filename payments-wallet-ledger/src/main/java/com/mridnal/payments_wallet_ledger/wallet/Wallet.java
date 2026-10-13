@@ -51,10 +51,6 @@ public class Wallet {
 
     private String name;
 
-    @PositiveOrZero
-    @Column(name = "balance", precision = 20, scale = 2)
-    private BigDecimal balance;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status",  nullable = false)
     private WalletStatus status;
@@ -69,9 +65,20 @@ public class Wallet {
         this.user = user;
         this.account = account;
         this.name = walletName;
-        this.balance = BigDecimal.ZERO;
         this.status = WalletStatus.ACTIVE;
-        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+            updatedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 }

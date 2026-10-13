@@ -6,9 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateWalletRequest (
-        @NotNull
-        Long userId,
-
         @NotBlank
         @Size(max = 100)
         String name,

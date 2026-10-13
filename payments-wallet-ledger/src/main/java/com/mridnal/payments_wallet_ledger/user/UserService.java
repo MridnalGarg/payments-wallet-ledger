@@ -10,21 +10,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UserService {
-    Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
         String name = request.name().trim();
         String email = request.email().trim().toLowerCase();
         String phone = request.phone().trim();
+        // Hash the raw password
+        String passwordHash = passwordEncoder.encode(request.password());
 
         if (userRepository.existsByEmail(email)) {
             throw new ResponseStatusException(
@@ -41,11 +49,7 @@ public class UserService {
         }
 
         User user = new User(name, email, phone);
-
-        logger.info("Creating user with name {} and email {} kyc_status {}",
-                user.getName(),
-                user.getEmail(),
-                user.getKycStatus());
+        user.setPasswordHash(passwordHash);
 
         try {
             User saved = userRepository.saveAndFlush(user);
@@ -92,5 +96,14 @@ public class UserService {
         user.setKycStatus(KycStatus.VERIFIED);
         user.setUpdatedAt(LocalDateTime.now());
         return UserResponse.from(user);
+    }
+
+    @Transactional
+    public Long getUserIdByIdentity(String identity) {
+        User user = userRepository.findByEmailOrPhone(identity)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Authenticated user not found"));
+
+        return user.getUserId();
     }
 }

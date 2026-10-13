@@ -5,6 +5,7 @@ import com.mridnal.payments_wallet_ledger.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,8 +27,13 @@ public class UserController {
         return userService.getUser(userId);
     }
 
-    @PutMapping("/kyc-verification/{userId}")
-    public UserResponse applyKycVerification(@PathVariable Long userId) {
+    @PutMapping("/kyc-verification")
+    public UserResponse applyKycVerification(Authentication authentication) {
+
+        String identity = authentication.getName();
+
+        Long userId = userService.getUserIdByIdentity(identity);
+
         return userService.kycVerification(userId);
     }
 

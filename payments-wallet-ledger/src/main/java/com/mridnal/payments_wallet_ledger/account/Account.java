@@ -27,8 +27,10 @@ public class Account {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
     private AccountStatus status;
 
+    @Column(name = "created_at",  nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     protected Account() {}
@@ -37,7 +39,6 @@ public class Account {
         this.accountType = accountType;
         this.user = user;
         this.status = AccountStatus.ACTIVE;
-        this.createdAt = LocalDateTime.now();
     }
 
     /** Creating a factory method
@@ -51,16 +52,10 @@ public class Account {
         );
     }
 
-    /** Allow creation of CASH_IN, CASH_OUT, FEE_REVENUE accounts
-     * only by ADMIN without exposing the constructor
-     */
-    public static Account createSystemAccount(AccountType accountType) {
-        if (accountType == null ||
-                accountType == AccountType.WALLET) {
-            throw new IllegalArgumentException(
-                    "A system account must have a system account type");
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
         }
-
-        return new Account(accountType, null);
     }
 }

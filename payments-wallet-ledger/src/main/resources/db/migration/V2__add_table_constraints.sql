@@ -53,8 +53,8 @@ ALTER TABLE wallets
     ADD CONSTRAINT uq_wallets_account
         UNIQUE (account_id),
 
-    ADD CONSTRAINT chk_wallets_balance
-        CHECK (balance >= 0),
+    ADD CONSTRAINT uq_wallet_name_user
+        UNIQUE (user_id, name),
 
     ADD CONSTRAINT chk_wallets_status
         CHECK (status IN (

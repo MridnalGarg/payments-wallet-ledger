@@ -2,9 +2,9 @@ package com.mridnal.payments_wallet_ledger.wallet;
 
 import com.mridnal.payments_wallet_ledger.account.Account;
 import com.mridnal.payments_wallet_ledger.account.AccountRepository;
+import com.mridnal.payments_wallet_ledger.common.enums.*;
 import com.mridnal.payments_wallet_ledger.common.exceptions.ResponseStatusException;
-import com.mridnal.payments_wallet_ledger.common.enums.AccountType;
-import com.mridnal.payments_wallet_ledger.common.enums.KycStatus;
+import com.mridnal.payments_wallet_ledger.ledger_entry.LedgerEntryRepository;
 import com.mridnal.payments_wallet_ledger.user.User;
 import com.mridnal.payments_wallet_ledger.user.UserRepository;
 import com.mridnal.payments_wallet_ledger.wallet.dto.CreateWalletRequest;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,22 +28,12 @@ public class WalletService {
 
     @Autowired
     private UserRepository userRepository;
-    @Transactional
-    public Account createSystemAccount(AccountType accountType) {
 
-        if (accountType == null || accountType == AccountType.WALLET) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Only system account types are allowed");
-        }
-
-        return accountRepository.save(
-                Account.createSystemAccount(accountType)
-        );
-    }
+    @Autowired
+    private LedgerEntryRepository ledgerEntryRepository;
 
     @Transactional
-    public WalletResponse createWallet(CreateWalletRequest request) {
+    public WalletResponse createWallet(Long userId, CreateWalletRequest request) {
 
         if (request.accountType() == null || request.accountType() != AccountType.WALLET) {
             throw new ResponseStatusException(
@@ -50,7 +41,7 @@ public class WalletService {
                     "Only Wallet account type is allowed");
         }
 
-        User user = userRepository.findByUserId(request.userId())
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "User not found"
@@ -103,6 +94,35 @@ public class WalletService {
                 .stream()
                 .map(WalletResponse::from)
                 .toList();
+    }
+
+    public BigDecimal getBalance(Long walletId) {
+
+        Wallet wallet = walletRepository.findByWalletId(walletId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Wallet not found"
+                ));
+
+        if(wallet.getStatus() != WalletStatus.ACTIVE
+                || wallet.getAccount().getStatus() != AccountStatus.ACTIVE
+        ) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Wallet Account is not active"
+            );
+        }
+
+        BigDecimal totalCredits =
+                ledgerEntryRepository.sumAmountByAccountAndDirection(
+                        wallet.getAccount().getAccountId(), LedgerDirection.CREDIT);
+
+        BigDecimal totalDebits =
+                ledgerEntryRepository.sumAmountByAccountAndDirection(
+                        wallet.getAccount().getAccountId(), LedgerDirection.DEBIT);
+
+        return totalCredits.subtract(totalDebits);
+
     }
 
 }
